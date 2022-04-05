@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 
+import '../modules/add_users/bindings/add_users_binding.dart';
+import '../modules/add_users/views/add_users_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 
@@ -15,6 +17,11 @@ class AppPages {
       name: _Paths.HOME,
       page: () => HomeView(),
       binding: HomeBinding(),
+    ),
+    GetPage(
+      name: _Paths.ADD_USERS,
+      page: () => AddUsersView(),
+      binding: AddUsersBinding(),
     ),
   ];
 }
