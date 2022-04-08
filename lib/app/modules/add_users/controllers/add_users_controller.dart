@@ -30,6 +30,8 @@ class AddUsersController extends GetxController {
             'uid': uid,
             'created_at': DateTime.now().toIso8601String(),
           });
+
+          await userCredential.user!.sendEmailVerification();
         }
       } on FirebaseAuthException catch (e) {
         if (e.code == 'weak-password') {
