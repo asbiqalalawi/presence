@@ -16,6 +16,7 @@ class AddUsersView extends GetView<AddUsersController> {
       ),
       body: ListView(padding: EdgeInsets.all(20), children: [
         TextField(
+          autocorrect: false,
           controller: controller.nipC,
           decoration: InputDecoration(
             labelText: 'NIP',
@@ -26,6 +27,7 @@ class AddUsersView extends GetView<AddUsersController> {
           height: 20,
         ),
         TextField(
+          autocorrect: false,
           controller: controller.nameC,
           decoration: InputDecoration(
             labelText: 'Name',
@@ -36,6 +38,7 @@ class AddUsersView extends GetView<AddUsersController> {
           height: 20,
         ),
         TextField(
+          autocorrect: false,
           controller: controller.emailC,
           decoration: InputDecoration(
             labelText: 'Email',

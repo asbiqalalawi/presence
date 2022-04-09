@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:presence/app/routes/app_pages.dart';
 
@@ -19,12 +20,36 @@ class LoginController extends GetxController {
 
         if (credential.user != null) {
           if (credential.user!.emailVerified == true) {
-            Get.offAllNamed(Routes.HOME);
+            if (passC.text == 'password') {
+              Get.offAllNamed(Routes.NEW_PASSWORD);
+            } else {
+              Get.offAllNamed(Routes.HOME);
+            }
           } else {
             Get.defaultDialog(
-                title: 'Verifikasi Email',
-                middleText:
-                    'Email belum diverifikasi. Silahkan verifikasi email terlebih dahulu.');
+              title: 'Verifikasi Email',
+              middleText:
+                  'Email belum diverifikasi. Silahkan verifikasi email terlebih dahulu.',
+              actions: [
+                OutlinedButton(
+                  onPressed: () => Get.back(),
+                  child: const Text('CANCEL'),
+                ),
+                ElevatedButton(
+                    onPressed: () {
+                      try {
+                        credential.user!.sendEmailVerification();
+                        Get.back();
+                        Get.snackbar(
+                            'Email Dikirim', 'Email verifikasi telah dikirim.');
+                      } catch (e) {
+                        Get.snackbar('Terjadi Kesalahan',
+                            'Tidak dapat mengirim verifikasi email.');
+                      }
+                    },
+                    child: const Text('KIRIM ULANG'))
+              ],
+            );
           }
         }
       } on FirebaseAuthException catch (e) {
