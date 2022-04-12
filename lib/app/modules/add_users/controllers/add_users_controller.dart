@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class AddUsersController extends GetxController {
+  RxBool isLoading = false.obs;
+  RxBool isLoadingAdd = false.obs;
+
   TextEditingController nipC = TextEditingController();
   TextEditingController nameC = TextEditingController();
   TextEditingController emailC = TextEditingController();
@@ -14,6 +17,7 @@ class AddUsersController extends GetxController {
 
   Future<void> createUser() async {
     if (passC.text.isNotEmpty) {
+      isLoadingAdd.value = true;
       try {
         String emailAdmin = auth.currentUser!.email!;
 
@@ -46,7 +50,9 @@ class AddUsersController extends GetxController {
           Get.back();
           Get.snackbar('Berhasil', 'Berhasil menambahkan pegawai.');
         }
+        isLoadingAdd.value = false;
       } on FirebaseAuthException catch (e) {
+        isLoadingAdd.value = false;
         if (e.code == 'weak-password') {
           Get.snackbar(
               'Terjadi Kesalahan', 'Password yang digunakan terlalu singkat.');
@@ -58,22 +64,28 @@ class AddUsersController extends GetxController {
           Get.snackbar('Terjadi Kesalahan', e.code);
         }
       } catch (e) {
+        isLoadingAdd.value = false;
         Get.snackbar('Terjadi Kesalahan', 'Tidak dapat menambahkan pegawai.');
       }
     } else {
+      isLoading.value = false;
       Get.snackbar('Terjadi kesalahan', 'Password harus diisi.');
     }
   }
 
-  void addUser() async {
+  Future<void> addUser() async {
     if (nipC.text.isNotEmpty &&
         nameC.text.isNotEmpty &&
         emailC.text.isNotEmpty) {
+      isLoading.value = true;
       Get.defaultDialog(
         title: 'Validasi Admin',
         content: Column(
           children: [
             const Text('Masukkan password Anda'),
+            const SizedBox(
+              height: 10,
+            ),
             TextField(
               controller: passC,
               autocorrect: false,
@@ -84,14 +96,22 @@ class AddUsersController extends GetxController {
         ),
         actions: [
           OutlinedButton(
-            onPressed: () => Get.back(),
+            onPressed: () {
+              isLoading.value = false;
+              Get.back();
+            },
             child: const Text('CANCEL'),
           ),
-          ElevatedButton(
-            onPressed: () async {
-              await createUser();
-            },
-            child: const Text('ADD USER'),
+          Obx(
+            () => ElevatedButton(
+              onPressed: () async {
+                if (isLoadingAdd.isFalse) {
+                  await createUser();
+                }
+                isLoading.value = false;
+              },
+              child: Text(isLoadingAdd.isFalse ? 'ADD USER' : 'LOADING...'),
+            ),
           ),
         ],
       );

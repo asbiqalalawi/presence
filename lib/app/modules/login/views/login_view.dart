@@ -5,6 +5,8 @@ import 'package:get/get.dart';
 import '../controllers/login_controller.dart';
 
 class LoginView extends GetView<LoginController> {
+  const LoginView({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,7 +20,7 @@ class LoginView extends GetView<LoginController> {
           TextField(
             autocorrect: false,
             controller: controller.emailC,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
                 labelText: 'Email', border: OutlineInputBorder()),
           ),
           const SizedBox(
@@ -28,17 +30,20 @@ class LoginView extends GetView<LoginController> {
             autocorrect: false,
             controller: controller.passC,
             obscureText: true,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
                 labelText: 'Password', border: OutlineInputBorder()),
           ),
           const SizedBox(
             height: 20,
           ),
-          ElevatedButton(
-              onPressed: () {
-                controller.login();
+          Obx(() => ElevatedButton(
+              onPressed: () async {
+                if (controller.isLoading.isFalse) {
+                  await controller.login();
+                }
               },
-              child: const Text('LOGIN')),
+              child:
+                  Text(controller.isLoading.isFalse ? 'LOGIN' : 'LOADING...'))),
           TextButton(onPressed: () {}, child: const Text('Lupa password?'))
         ],
       ),

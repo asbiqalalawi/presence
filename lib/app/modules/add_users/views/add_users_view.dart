@@ -48,11 +48,14 @@ class AddUsersView extends GetView<AddUsersController> {
         SizedBox(
           height: 30,
         ),
-        ElevatedButton(
-            onPressed: () {
-              controller.addUser();
+        Obx(() => ElevatedButton(
+            onPressed: () async {
+              if (controller.isLoading.isFalse) {
+                await controller.addUser();
+              }
             },
-            child: Text('Add Users'))
+            child: Text(
+                controller.isLoading.isFalse ? 'ADD PEGAWAI' : 'LOADING...')))
       ]),
     );
   }

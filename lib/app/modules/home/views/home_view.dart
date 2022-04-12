@@ -26,9 +26,17 @@ class HomeView extends GetView<HomeController> {
           style: TextStyle(fontSize: 20),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => controller.logOut(),
-        child: const Icon(Icons.logout),
+      floatingActionButton: Obx(
+        () => FloatingActionButton(
+          onPressed: () {
+            if (controller.isLoading.isFalse) {
+              controller.logOut();
+            }
+          },
+          child: controller.isLoading.isFalse
+              ? const Icon(Icons.logout)
+              : const CircularProgressIndicator(),
+        ),
       ),
     );
   }
