@@ -2,6 +2,8 @@ import 'package:get/get.dart';
 
 import '../modules/add_users/bindings/add_users_binding.dart';
 import '../modules/add_users/views/add_users_view.dart';
+import '../modules/forgot_password/bindings/forgot_password_binding.dart';
+import '../modules/forgot_password/views/forgot_password_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/login/bindings/login_binding.dart';
@@ -36,6 +38,11 @@ class AppPages {
       name: _Paths.NEW_PASSWORD,
       page: () => NewPasswordView(),
       binding: NewPasswordBinding(),
+    ),
+    GetPage(
+      name: _Paths.FORGOT_PASSWORD,
+      page: () => ForgotPasswordView(),
+      binding: ForgotPasswordBinding(),
     ),
   ];
 }

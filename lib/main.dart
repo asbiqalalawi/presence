@@ -24,6 +24,7 @@ Future<void> main() async {
               )),
             );
           }
+          // ignore: avoid_print
           print(snapshot.data);
           return GetMaterialApp(
             title: "Application",
