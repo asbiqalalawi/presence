@@ -55,6 +55,25 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
             ),
           ),
           const SizedBox(
+            height: 25,
+          ),
+          const Text(
+            'Photo Profile',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              user['profile'] != null && user['profile'] != ''
+                  ? const Text('Foto')
+                  : const Text('no choosen'),
+              TextButton(onPressed: () {}, child: const Text('choose'))
+            ],
+          ),
+          const SizedBox(
             height: 30,
           ),
           Obx(() => ElevatedButton(
