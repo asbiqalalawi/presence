@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
@@ -67,10 +69,46 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              user['profile'] != null && user['profile'] != ''
-                  ? const Text('Foto')
-                  : const Text('no choosen'),
-              TextButton(onPressed: () {}, child: const Text('choose'))
+              GetBuilder<UpdateProfileController>(
+                builder: (c) {
+                  if (c.image != null) {
+                    return ClipOval(
+                      child: SizedBox(
+                        height: 100,
+                        width: 100,
+                        child: Image.file(
+                          File(c.image!.path),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    );
+                  } else {
+                    if (user['profile'] != null) {
+                      if (user['profile'] != '') {
+                        return ClipOval(
+                          child: SizedBox(
+                            height: 100,
+                            width: 100,
+                            child: Image.network(
+                              user['profile'],
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        );
+                      } else {
+                        return const Text('No Image Choosen');
+                      }
+                    } else {
+                      return const Text('No Image Choosen');
+                    }
+                  }
+                },
+              ),
+              TextButton(
+                  onPressed: () {
+                    controller.pickImage();
+                  },
+                  child: const Text('choose'))
             ],
           ),
           const SizedBox(
