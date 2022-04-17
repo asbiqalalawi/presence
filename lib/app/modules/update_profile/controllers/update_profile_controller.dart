@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class UpdateProfileController extends GetxController {
   RxBool isLoading = false.obs;
@@ -11,6 +14,7 @@ class UpdateProfileController extends GetxController {
   TextEditingController emailC = TextEditingController();
 
   FirebaseFirestore firestore = FirebaseFirestore.instance;
+  final storageRef = FirebaseStorage.instance.ref();
 
   final ImagePicker picker = ImagePicker();
 
@@ -27,10 +31,19 @@ class UpdateProfileController extends GetxController {
         emailC.text.isNotEmpty) {
       isLoading.value = true;
       try {
-        await firestore
-            .collection('employee')
-            .doc(uid)
-            .update({'name': nameC.text});
+        Map<String, dynamic> data = {'name': nameC.text};
+        if (image != null) {
+          File file = File(image!.path);
+          String ext = image!.name.split('.').last;
+
+          final mountainsRef = storageRef.child("$uid/profile.$ext");
+
+          await mountainsRef.putFile(file);
+          String imageUrl = await mountainsRef.getDownloadURL();
+
+          data.addAll({'profile': imageUrl});
+        }
+        await firestore.collection('employee').doc(uid).update(data);
         Get.back();
         Get.snackbar('Berhasil', 'Profile berhasil diperbarui.');
       } catch (e) {
