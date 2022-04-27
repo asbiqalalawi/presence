@@ -45,12 +45,27 @@ class UpdateProfileController extends GetxController {
         }
         await firestore.collection('employee').doc(uid).update(data);
         Get.back();
+        image = null;
         Get.snackbar('Berhasil', 'Profile berhasil diperbarui.');
       } catch (e) {
         Get.snackbar('Terjadi Kesalahan', 'Tidak dapat memperbarui profile.');
       } finally {
         isLoading.value = false;
       }
+    }
+  }
+
+  void deleteProfile(String uid) async {
+    try {
+      firestore.collection('employee').doc(uid).update({
+        'profile': FieldValue.delete(),
+      });
+      Get.back();
+      Get.snackbar('Berhasil', 'Berhasil menghapus foto profile.');
+    } catch (e) {
+      Get.snackbar('Terjadi Kesalahan', 'Tidak dapat menghapus foto profile.');
+    } finally {
+      update();
     }
   }
 }
