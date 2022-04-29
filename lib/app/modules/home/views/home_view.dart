@@ -1,12 +1,15 @@
+import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:presence/app/controllers/page_index_controller.dart';
 import 'package:presence/app/routes/app_pages.dart';
 
 import '../controllers/home_controller.dart';
 
 class HomeView extends GetView<HomeController> {
-  const HomeView({Key? key}) : super(key: key);
+  HomeView({Key? key}) : super(key: key);
+  final pageC = Get.find<PageIndexController>();
 
   @override
   Widget build(BuildContext context) {
@@ -19,23 +22,6 @@ class HomeView extends GetView<HomeController> {
             onPressed: () => Get.toNamed(Routes.PROFILE),
             icon: const Icon(Icons.person),
           )
-          // StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-          //   stream: controller.streamRole(),
-          //   builder: (context, snapshot) {
-          //     if (snapshot.connectionState == ConnectionState.waiting) {
-          //       return const SizedBox();
-          //     }
-          //     String role = snapshot.data!.data()!['role'];
-          //     if (role == 'admin') {
-          //       return IconButton(
-          //         onPressed: () => Get.toNamed(Routes.ADD_USERS),
-          //         icon: const Icon(Icons.person),
-          //       );
-          //     } else {
-          //       return const SizedBox();
-          //     }
-          //   },
-          // ),
         ],
       ),
       body: const Center(
@@ -44,17 +30,15 @@ class HomeView extends GetView<HomeController> {
           style: TextStyle(fontSize: 20),
         ),
       ),
-      floatingActionButton: Obx(
-        () => FloatingActionButton(
-          onPressed: () {
-            if (controller.isLoading.isFalse) {
-              controller.logOut();
-            }
-          },
-          child: controller.isLoading.isFalse
-              ? const Icon(Icons.logout)
-              : const CircularProgressIndicator(),
-        ),
+      bottomNavigationBar: ConvexAppBar(
+        style: TabStyle.fixedCircle,
+        items: const [
+          TabItem(icon: Icons.home, title: 'Home'),
+          TabItem(icon: Icons.fingerprint, title: 'Add'),
+          TabItem(icon: Icons.people, title: 'Profile'),
+        ],
+        initialActiveIndex: pageC.pageIndex.value, //optional, defFault as 0
+        onTap: (int i) => pageC.changePage(i),
       ),
     );
   }
