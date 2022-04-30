@@ -9,6 +9,7 @@ class AddUsersController extends GetxController {
 
   TextEditingController nipC = TextEditingController();
   TextEditingController nameC = TextEditingController();
+  TextEditingController jobC = TextEditingController();
   TextEditingController emailC = TextEditingController();
   TextEditingController passC = TextEditingController();
 
@@ -34,6 +35,7 @@ class AddUsersController extends GetxController {
           await firestore.collection('employee').doc(uid).set({
             'nip': nipC.text,
             'name': nameC.text,
+            'job': jobC.text,
             'email': emailC.text,
             'uid': uid,
             'role': 'pegawai',
@@ -77,6 +79,7 @@ class AddUsersController extends GetxController {
   Future<void> addUser() async {
     if (nipC.text.isNotEmpty &&
         nameC.text.isNotEmpty &&
+        jobC.text.isNotEmpty &&
         emailC.text.isNotEmpty) {
       isLoading.value = true;
       Get.defaultDialog(
@@ -117,7 +120,8 @@ class AddUsersController extends GetxController {
         ],
       );
     } else {
-      Get.snackbar('Terjadi Kesalahan', 'NIP, nama, dan email harus diisi.');
+      Get.snackbar(
+          'Terjadi Kesalahan', 'NIP, nama, job, dan email harus diisi.');
     }
   }
 }
