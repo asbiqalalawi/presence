@@ -16,7 +16,7 @@ class HomeController extends GetxController {
     Get.offAllNamed(Routes.LOGIN);
   }
 
-  Stream<DocumentSnapshot<Map<String, dynamic>>> streamRole() async* {
+  Stream<DocumentSnapshot<Map<String, dynamic>>> streamUser() async* {
     String uid = auth.currentUser!.uid;
 
     yield* firestore.collection('employee').doc(uid).snapshots();

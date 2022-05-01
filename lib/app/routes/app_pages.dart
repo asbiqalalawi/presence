@@ -10,6 +10,8 @@ import '../modules/login/bindings/login_binding.dart';
 import '../modules/login/views/login_view.dart';
 import '../modules/new_password/bindings/new_password_binding.dart';
 import '../modules/new_password/views/new_password_view.dart';
+import '../modules/presence_details/bindings/presence_details_binding.dart';
+import '../modules/presence_details/views/presence_details_view.dart';
 import '../modules/profile/bindings/profile_binding.dart';
 import '../modules/profile/views/profile_view.dart';
 import '../modules/update_password/bindings/update_password_binding.dart';
@@ -22,6 +24,7 @@ part 'app_routes.dart';
 class AppPages {
   AppPages._();
 
+  // ignore: constant_identifier_names
   static const INITIAL = Routes.HOME;
 
   static final routes = [
@@ -33,7 +36,7 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.ADD_USERS,
-      page: () => AddUsersView(),
+      page: () => const AddUsersView(),
       binding: AddUsersBinding(),
     ),
     GetPage(
@@ -66,6 +69,11 @@ class AppPages {
       name: _Paths.UPDATE_PASSWORD,
       page: () => const UpdatePasswordView(),
       binding: UpdatePasswordBinding(),
+    ),
+    GetPage(
+      name: _Paths.PRESENCE_DETAILS,
+      page: () => const PresenceDetailsView(),
+      binding: PresenceDetailsBinding(),
     ),
   ];
 }
