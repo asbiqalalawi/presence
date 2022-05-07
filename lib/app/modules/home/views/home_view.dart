@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:presence/app/controllers/page_index_controller.dart';
+import 'package:presence/app/routes/app_pages.dart';
 
 import '../controllers/home_controller.dart';
 
@@ -154,52 +155,65 @@ class HomeView extends GetView<HomeController> {
                             fontWeight: FontWeight.bold, fontSize: 18),
                       ),
                       TextButton(
-                          onPressed: () {}, child: const Text('See more')),
+                          onPressed: () => Get.toNamed(Routes.ALL_PRESENCE),
+                          child: const Text('See more')),
                     ],
                   ),
                   ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: 5,
-                      itemBuilder: (context, index) {
-                        return Container(
-                          padding: const EdgeInsets.all(20),
-                          margin: const EdgeInsets.only(bottom: 20),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[200],
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: 5,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 20),
+                        child: Material(
+                          color: Colors.grey[200],
+                          borderRadius: BorderRadius.circular(20),
+                          child: InkWell(
+                            onTap: () => Get..toNamed(Routes.PRESENCE_DETAILS),
                             borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                            child: Container(
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Text(
-                                      'Masuk',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        const Text(
+                                          'Masuk',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        Text(
+                                          DateFormat.yMMMEd()
+                                              .format(DateTime.now()),
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
                                     ),
-                                    Text(
-                                      DateFormat.yMMMEd()
-                                          .format(DateTime.now()),
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.bold),
+                                    Text(DateFormat.jms()
+                                        .format(DateTime.now())),
+                                    const SizedBox(
+                                      height: 10,
                                     ),
-                                  ],
-                                ),
-                                Text(DateFormat.jms().format(DateTime.now())),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                const Text('Keluar',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold)),
-                                Text(DateFormat.jms().format(DateTime.now())),
-                              ]),
-                        );
-                      })
+                                    const Text('Keluar',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold)),
+                                    Text(DateFormat.jms()
+                                        .format(DateTime.now())),
+                                  ]),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 ],
               );
             } else {
