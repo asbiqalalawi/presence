@@ -43,11 +43,17 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<!-- Image Picker -->
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Privacy - Photo Library Usage Description</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Privacy - Camera Usage Description</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Privacy - Microphone Usage Description</string>
+	<!-- Geolocator -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app needs access to location when open.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>This app needs access to location when in the background.</string>	
 </dict>
 </plist>
