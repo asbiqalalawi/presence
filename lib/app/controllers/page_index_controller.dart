@@ -1,9 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:presence/app/routes/app_pages.dart';
 import 'package:geolocator/geolocator.dart';
 
 class PageIndexController extends GetxController {
   RxInt pageIndex = 0.obs;
+
+  FirebaseAuth auth = FirebaseAuth.instance;
+  FirebaseFirestore fIrestore = FirebaseFirestore.instance;
 
   void changePage(int i) async {
     switch (i) {
@@ -12,6 +17,7 @@ class PageIndexController extends GetxController {
 
         if (dataResponse['status']) {
           Position position = dataResponse['position'];
+          await updatePosition(position);
           Get.snackbar(dataResponse['message'],
               '${position.latitude}, ${position.longitude}');
         } else {
@@ -26,6 +32,17 @@ class PageIndexController extends GetxController {
         pageIndex.value = i;
         Get.offAllNamed(Routes.HOME);
     }
+  }
+
+  Future<void> updatePosition(Position position) async {
+    String uid = auth.currentUser!.uid;
+
+    await fIrestore.collection('employee').doc(uid).update({
+      'position': {
+        'lat': position.latitude,
+        'long': position.longitude,
+      }
+    });
   }
 
   /// Determine the current position of the device.
