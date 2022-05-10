@@ -64,9 +64,14 @@ class HomeView extends GetView<HomeController> {
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 20),
                           ),
-                          Text(user['position'] == null
-                              ? 'Belum tersedia.'
-                              : '${user['position']}'),
+                          SizedBox(
+                            width: 200,
+                            child: Text(
+                              user['address'] == null
+                                  ? 'Belum tersedia.'
+                                  : '${user['address']}',
+                            ),
+                          ),
                         ],
                       )
                     ],

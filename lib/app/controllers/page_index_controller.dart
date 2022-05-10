@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
 import 'package:presence/app/routes/app_pages.dart';
 import 'package:geolocator/geolocator.dart';
@@ -17,9 +18,14 @@ class PageIndexController extends GetxController {
 
         if (dataResponse['status']) {
           Position position = dataResponse['position'];
-          await updatePosition(position);
-          Get.snackbar(dataResponse['message'],
-              '${position.latitude}, ${position.longitude}');
+
+          List<Placemark> placemarks = await placemarkFromCoordinates(
+              position.latitude, position.longitude);
+
+          String address = '${placemarks[0].street}, ${placemarks[0].locality}';
+          await updatePosition(position, address);
+
+          Get.snackbar(dataResponse['message'], address);
         } else {
           Get.snackbar('Terjadi Kesalahan', dataResponse['message']);
         }
@@ -34,14 +40,15 @@ class PageIndexController extends GetxController {
     }
   }
 
-  Future<void> updatePosition(Position position) async {
+  Future<void> updatePosition(Position position, String address) async {
     String uid = auth.currentUser!.uid;
 
     await fIrestore.collection('employee').doc(uid).update({
       'position': {
         'lat': position.latitude,
         'long': position.longitude,
-      }
+      },
+      'address': address,
     });
   }
 
