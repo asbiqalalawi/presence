@@ -27,8 +27,6 @@ class PageIndexController extends GetxController {
           await updatePosition(position, address);
 
           await presence(position, address);
-
-          Get.snackbar('Berhasil', 'Berhasil melakukan absensi.');
         } else {
           Get.snackbar('Terjadi Kesalahan', dataResponse['message']);
         }
@@ -55,6 +53,7 @@ class PageIndexController extends GetxController {
     String todayDocId = DateFormat.yMd().format(date).replaceAll('/', '-');
 
     if (snapPresence.docs.isEmpty) {
+      // Belum Pernah Absen dan Set Absensi Masuk
       colPresence.doc(todayDocId).set({
         'date': date.toIso8601String(),
         'masuk': {
@@ -65,7 +64,49 @@ class PageIndexController extends GetxController {
           'status': 'Di dalam area'
         }
       });
-    } else {}
+
+      Get.snackbar('Berhasil', 'Berhasil melakukan absensi.');
+    } else {
+      // Sudah pernah absen dan cek apakalah sudah absen dihari tersebut
+      DocumentSnapshot<Map<String, dynamic>> todayDoc =
+          await colPresence.doc(todayDocId).get();
+
+      if (todayDoc.exists) {
+        Map<String, dynamic>? dataPeresenceToday = todayDoc.data();
+        if (dataPeresenceToday?['keluar'] != null) {
+          // SUdah Absen masuk dan keluar
+          Get.snackbar('Sukses', 'Anda sudah absen masuk dan keluar.');
+        } else {
+          // Absen Keluar
+          await colPresence.doc(todayDocId).update({
+            'date': date.toIso8601String(),
+            'keluar': {
+              'date': date.toIso8601String(),
+              'lat': position.latitude,
+              'long': position.longitude,
+              'address': address,
+              'status': 'Di dalam area'
+            }
+          });
+
+          Get.snackbar('Berhasil', 'Berhasil melakukan absensi.');
+        }
+      } else {
+        // Absen masuk
+        await colPresence.doc(todayDocId).set({
+          'date': date.toIso8601String(),
+          'masuk': {
+            'date': date.toIso8601String(),
+            'lat': position.latitude,
+            'long': position.longitude,
+            'address': address,
+            'status': 'Di dalam area'
+          }
+        });
+
+        Get.snackbar('Berhasil', 'Berhasil melakukan absensi.');
+      }
+    }
   }
 
   Future<void> updatePosition(Position position, String address) async {
