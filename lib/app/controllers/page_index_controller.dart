@@ -26,7 +26,10 @@ class PageIndexController extends GetxController {
           String address = '${placemarks[0].street}, ${placemarks[0].locality}';
           await updatePosition(position, address);
 
-          await presence(position, address);
+          double distance = Geolocator.distanceBetween(
+              37.4219983, -122.0861887, position.latitude, position.longitude);
+
+          await presence(position, address, distance);
         } else {
           Get.snackbar('Terjadi Kesalahan', dataResponse['message']);
         }
@@ -41,7 +44,8 @@ class PageIndexController extends GetxController {
     }
   }
 
-  Future<void> presence(Position position, String address) async {
+  Future<void> presence(
+      Position position, String address, double distance) async {
     String uid = auth.currentUser!.uid;
 
     CollectionReference<Map<String, dynamic>> colPresence =
@@ -52,6 +56,12 @@ class PageIndexController extends GetxController {
     DateTime date = DateTime.now();
     String todayDocId = DateFormat.yMd().format(date).replaceAll('/', '-');
 
+    String status = 'Di Luar Area.';
+
+    if (distance <= 200) {
+      status = 'Di Dalam Area.';
+    }
+
     if (snapPresence.docs.isEmpty) {
       // Belum Pernah Absen dan Set Absensi Masuk
       colPresence.doc(todayDocId).set({
@@ -61,7 +71,7 @@ class PageIndexController extends GetxController {
           'lat': position.latitude,
           'long': position.longitude,
           'address': address,
-          'status': 'Di dalam area'
+          'status': status,
         }
       });
 
@@ -85,7 +95,7 @@ class PageIndexController extends GetxController {
               'lat': position.latitude,
               'long': position.longitude,
               'address': address,
-              'status': 'Di dalam area'
+              'status': status,
             }
           });
 
@@ -100,7 +110,7 @@ class PageIndexController extends GetxController {
             'lat': position.latitude,
             'long': position.longitude,
             'address': address,
-            'status': 'Di dalam area'
+            'status': status,
           }
         });
 
