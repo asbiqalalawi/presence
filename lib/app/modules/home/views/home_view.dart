@@ -41,15 +41,13 @@ class HomeView extends GetView<HomeController> {
                           width: 75,
                           height: 75,
                           color: Colors.grey[200],
-                          child: Center(
-                            child: Image.network(
-                              user['profile'] != null
-                                  ? user['profile'] != ''
-                                      ? user['profile']
-                                      : defaultImage
-                                  : defaultImage,
-                              fit: BoxFit.cover,
-                            ),
+                          child: Image.network(
+                            user['profile'] != null
+                                ? user['profile'] != ''
+                                    ? user['profile']
+                                    : defaultImage
+                                : defaultImage,
+                            fit: BoxFit.cover,
                           ),
                         ),
                       ),
@@ -166,61 +164,100 @@ class HomeView extends GetView<HomeController> {
                           child: const Text('See more')),
                     ],
                   ),
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: 5,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 20),
-                        child: Material(
-                          color: Colors.grey[200],
-                          borderRadius: BorderRadius.circular(20),
-                          child: InkWell(
-                            onTap: () => Get..toNamed(Routes.PRESENCE_DETAILS),
-                            borderRadius: BorderRadius.circular(20),
-                            child: Container(
-                              padding: const EdgeInsets.all(20),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        const Text(
-                                          'Masuk',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        Text(
-                                          DateFormat.yMMMEd()
-                                              .format(DateTime.now()),
-                                          style: const TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ],
-                                    ),
-                                    Text(DateFormat.jms()
-                                        .format(DateTime.now())),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
-                                    const Text('Keluar',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold)),
-                                    Text(DateFormat.jms()
-                                        .format(DateTime.now())),
-                                  ]),
+                  StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                      stream: controller.streamPresence(),
+                      builder: (context, snapPresence) {
+                        if (snapPresence.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+                        if (snapPresence.data!.docs.isEmpty ||
+                            snapPresence.data == null) {
+                          return const SizedBox(
+                            height: 150,
+                            child: Center(
+                              child: Text('Belum ada history presensi.'),
                             ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+                          );
+                        }
+                        return ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: snapPresence.data!.docs.length,
+                          itemBuilder: (context, index) {
+                            Map<String, dynamic> data = snapPresence
+                                .data!.docs.reversed
+                                .toList()[index]
+                                .data();
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 20),
+                              child: Material(
+                                color: Colors.grey[200],
+                                borderRadius: BorderRadius.circular(20),
+                                child: InkWell(
+                                  onTap: () =>
+                                      Get..toNamed(Routes.PRESENCE_DETAILS),
+                                  borderRadius: BorderRadius.circular(20),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(20),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              const Text(
+                                                'Masuk',
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                              Text(
+                                                DateFormat.yMMMEd().format(
+                                                  DateTime.parse(
+                                                    data['date'],
+                                                  ),
+                                                ),
+                                                style: const TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                            ],
+                                          ),
+                                          Text(
+                                            DateFormat.jms().format(
+                                              DateTime.parse(
+                                                  data['masuk']['date']),
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          const Text('Keluar',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold)),
+                                          Text(data['keluar']?['date'] != null
+                                              ? DateFormat.jms().format(
+                                                  DateTime.parse(
+                                                    data['keluar']['date'],
+                                                  ),
+                                                )
+                                              : '-'),
+                                        ]),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      }),
                 ],
               );
             } else {
