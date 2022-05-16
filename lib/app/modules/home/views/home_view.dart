@@ -260,7 +260,7 @@ class HomeView extends GetView<HomeController> {
                                           Text(
                                             DateFormat.jms().format(
                                               DateTime.parse(
-                                                  data['masuk']['date']),
+                                                  data['masuk']?['date']),
                                             ),
                                           ),
                                           const SizedBox(

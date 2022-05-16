@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -63,20 +64,39 @@ class PageIndexController extends GetxController {
     }
 
     if (snapPresence.docs.isEmpty) {
-      // Belum Pernah Absen dan Set Absensi Masuk
-      colPresence.doc(todayDocId).set({
-        'date': date.toIso8601String(),
-        'masuk': {
-          'date': date.toIso8601String(),
-          'lat': position.latitude,
-          'long': position.longitude,
-          'address': address,
-          'status': status,
-          'distance': distance,
-        }
-      });
+      // Belum Pernah Absen dan Set Absensi Masuk Pertama kali
 
-      Get.snackbar('Berhasil', 'Berhasil melakukan absensi.');
+      await Get.defaultDialog(
+        title: 'Validasi Presensi',
+        middleText:
+            'Apakah Anda yakin ingin mengisi daftar hadir (Masuk) sekarang?',
+        actions: [
+          OutlinedButton(
+            onPressed: () => Get.back(),
+            child: const Text(
+              "Cancel",
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Get.back();
+              await colPresence.doc(todayDocId).set({
+                'date': date.toIso8601String(),
+                'masuk': {
+                  'date': date.toIso8601String(),
+                  'lat': position.latitude,
+                  'long': position.longitude,
+                  'address': address,
+                  'status': status,
+                  'distance': distance,
+                }
+              });
+              Get.snackbar('Berhasil', 'Berhasil melakukan absen masuk.');
+            },
+            child: const Text('Yes'),
+          )
+        ],
+      );
     } else {
       // Sudah pernah absen dan cek apakalah sudah absen dihari tersebut
       DocumentSnapshot<Map<String, dynamic>> todayDoc =
@@ -89,35 +109,73 @@ class PageIndexController extends GetxController {
           Get.snackbar('Sukses', 'Anda sudah absen masuk dan keluar.');
         } else {
           // Absen Keluar
-          await colPresence.doc(todayDocId).update({
-            'date': date.toIso8601String(),
-            'keluar': {
-              'date': date.toIso8601String(),
-              'lat': position.latitude,
-              'long': position.longitude,
-              'address': address,
-              'status': status,
-              'distance': distance,
-            }
-          });
+          await Get.defaultDialog(
+            title: 'Validasi Presensi',
+            middleText:
+                'Apakah Anda yakin ingin mengisi daftar hadir (Keluar) sekarang?',
+            actions: [
+              OutlinedButton(
+                onPressed: () => Get.back(),
+                child: const Text(
+                  "Cancel",
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  Get.back();
+                  await colPresence.doc(todayDocId).update({
+                    'date': date.toIso8601String(),
+                    'keluar': {
+                      'date': date.toIso8601String(),
+                      'lat': position.latitude,
+                      'long': position.longitude,
+                      'address': address,
+                      'status': status,
+                      'distance': distance,
+                    }
+                  });
 
-          Get.snackbar('Berhasil', 'Berhasil melakukan absensi.');
+                  Get.snackbar('Berhasil', 'Berhasil melakukan absen keluar.');
+                },
+                child: const Text('Yes'),
+              )
+            ],
+          );
         }
       } else {
         // Absen masuk
-        await colPresence.doc(todayDocId).set({
-          'date': date.toIso8601String(),
-          'masuk': {
-            'date': date.toIso8601String(),
-            'lat': position.latitude,
-            'long': position.longitude,
-            'address': address,
-            'status': status,
-            'distance': distance,
-          }
-        });
+        await Get.defaultDialog(
+          title: 'Validasi Presensi',
+          middleText:
+              'Apakah Anda yakin ingin mengisi daftar hadir (Masuk) sekarang?',
+          actions: [
+            OutlinedButton(
+              onPressed: () => Get.back(),
+              child: const Text(
+                "Cancel",
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                Get.back();
+                await colPresence.doc(todayDocId).set({
+                  'date': date.toIso8601String(),
+                  'masuk': {
+                    'date': date.toIso8601String(),
+                    'lat': position.latitude,
+                    'long': position.longitude,
+                    'address': address,
+                    'status': status,
+                    'distance': distance,
+                  }
+                });
 
-        Get.snackbar('Berhasil', 'Berhasil melakukan absensi.');
+                Get.snackbar('Berhasil', 'Berhasil melakukan absen masuk.');
+              },
+              child: const Text('Yes'),
+            )
+          ],
+        );
       }
     }
   }

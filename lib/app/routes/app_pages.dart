@@ -79,7 +79,7 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.ALL_PRESENCE,
-      page: () => AllPresenceView(),
+      page: () => const AllPresenceView(),
       binding: AllPresenceBinding(),
     ),
   ];
