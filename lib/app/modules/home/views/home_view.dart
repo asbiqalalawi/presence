@@ -118,28 +118,56 @@ class HomeView extends GetView<HomeController> {
                       borderRadius: BorderRadius.circular(20),
                       color: Colors.grey[200],
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Column(
-                          children: const [
-                            Text('Masuk'),
-                            Text('-'),
-                          ],
-                        ),
-                        Container(
-                          height: 40,
-                          width: 2,
-                          color: Colors.grey,
-                        ),
-                        Column(
-                          children: const [
-                            Text('Keluar'),
-                            Text('-'),
-                          ],
-                        ),
-                      ],
-                    ),
+                    child: StreamBuilder<
+                            DocumentSnapshot<Map<String, dynamic>>>(
+                        stream: controller.streamTodayPresence(),
+                        builder: (context, snapToday) {
+                          if (snapToday.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+
+                          Map<String, dynamic>? dateToday =
+                              snapToday.data?.data();
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Column(
+                                children: [
+                                  const Text('Masuk'),
+                                  Text(
+                                    dateToday?['masuk'] == null
+                                        ? '-'
+                                        : DateFormat.jms().format(
+                                            DateTime.parse(
+                                                dateToday?['masuk']['date']),
+                                          ),
+                                  ),
+                                ],
+                              ),
+                              Container(
+                                height: 40,
+                                width: 2,
+                                color: Colors.grey,
+                              ),
+                              Column(
+                                children: [
+                                  const Text('Keluar'),
+                                  Text(
+                                    dateToday?['keluar'] == null
+                                        ? '-'
+                                        : DateFormat.jms().format(
+                                            DateTime.parse(
+                                                dateToday?['keluar']['date']),
+                                          ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          );
+                        }),
                   ),
                   const SizedBox(
                     height: 20,
@@ -187,10 +215,8 @@ class HomeView extends GetView<HomeController> {
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: snapPresence.data!.docs.length,
                           itemBuilder: (context, index) {
-                            Map<String, dynamic> data = snapPresence
-                                .data!.docs.reversed
-                                .toList()[index]
-                                .data();
+                            Map<String, dynamic> data =
+                                snapPresence.data!.docs[index].data();
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 20),
                               child: Material(
