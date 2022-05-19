@@ -6,7 +6,9 @@ import 'package:intl/intl.dart';
 import '../controllers/presence_details_controller.dart';
 
 class PresenceDetailsView extends GetView<PresenceDetailsController> {
-  const PresenceDetailsView({Key? key}) : super(key: key);
+  PresenceDetailsView({Key? key}) : super(key: key);
+
+  final Map<String, dynamic> data = Get.arguments;
 
   @override
   Widget build(BuildContext context) {
@@ -24,34 +26,54 @@ class PresenceDetailsView extends GetView<PresenceDetailsController> {
                   borderRadius: BorderRadius.circular(20),
                   color: Colors.grey[200]),
               child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      DateFormat.yMMMMEEEEd().format(DateTime.now()),
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 17),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Text(
-                      'Masuk',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    Text('Jam: ${DateFormat.jms().format(DateTime.now())}'),
-                    Text('Posisi: -8934292837423, 3294823'),
-                    Text('Status: Di dalam area'),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Text(
-                      'Keluar',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    Text('Jam: ${DateFormat.jms().format(DateTime.now())}'),
-                    Text('Posisi: -8934292837423, 3294823'),
-                    Text('Status: Di dalam area'),
-                  ]),
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    DateFormat.yMMMMEEEEd()
+                        .format(DateTime.parse(data['date'])),
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 17),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  const Text(
+                    'Masuk',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                      'Jam: ${DateFormat.jms().format(DateTime.parse(data['masuk']['date']))}'),
+                  Text(
+                      'Posisi: ${data['masuk']['lat']}, ${data['masuk']['long']}'),
+                  Text('Status: ${data['masuk']['status']}'),
+                  Text(
+                      'Distance: ${data['masuk']['distance'].toString().split('.').first} meter'),
+                  Text('Address: ${data['masuk']['address']}'),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  const Text(
+                    'Keluar',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(data['keluar']?['date'] == null
+                      ? 'Jam: -'
+                      : 'Jam: ${DateFormat.jms().format(DateTime.parse(data['keluar']['date']))}'),
+                  Text(data['keluar']?['lat'] == null &&
+                          data['keluar']?['long'] == null
+                      ? 'Posisi: -'
+                      : 'Posisi: ${data['keluar']['lat']}, ${data['keluar']['long']}'),
+                  Text(data['keluar']?['status'] == null
+                      ? 'Status: -'
+                      : 'Status: ${data['keluar']['status']}'),
+                  Text(data['keluar']?['distance'] == null
+                      ? 'Distance: -'
+                      : 'Distance: ${data['keluar']['distance'].toString().split('.').first} meter'),
+                  Text(data['keluar']?['address'] == null
+                      ? 'Address: -'
+                      : 'Address: ${data['keluar']['address']}'),
+                ],
+              ),
             ),
           ],
         ));
