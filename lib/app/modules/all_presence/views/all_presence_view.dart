@@ -17,114 +17,105 @@ class AllPresenceView extends GetView<AllPresenceController> {
         title: const Text('SEMUA PRESENSI'),
         centerTitle: true,
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-              // elevation: 8,
-              child: TextField(
-                decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    labelText: 'Search...'),
-              ),
-            ),
-          ),
-          Expanded(
-            child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                stream: controller.streamAllPresence(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                  if (snapshot.data!.docs.isEmpty ||
-                      snapshot.data?.docs == null) {
-                    return const SizedBox(
-                      height: 150,
-                      child: Center(
-                        child: Text('Belum ada history presensi.'),
-                      ),
-                    );
-                  }
-                  return ListView.builder(
-                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                    itemCount: snapshot.data!.docs.length,
-                    itemBuilder: (context, index) {
-                      Map<String, dynamic> data =
-                          snapshot.data!.docs[index].data();
+      body: GetBuilder<AllPresenceController>(
+        builder: (c) => FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
+          future: controller.getAllPresence(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            if (snapshot.data!.docs.isEmpty || snapshot.data?.docs == null) {
+              return const SizedBox(
+                height: 150,
+                child: Center(
+                  child: Text('Belum ada history presensi.'),
+                ),
+              );
+            }
+            return ListView.builder(
+              padding: const EdgeInsets.all(20),
+              itemCount: snapshot.data!.docs.length,
+              itemBuilder: (context, index) {
+                Map<String, dynamic> data = snapshot.data!.docs[index].data();
 
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 20),
-                        child: Material(
-                          color: Colors.grey[200],
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 20),
+                  child: Material(
+                    color: Colors.grey[200],
+                    borderRadius: BorderRadius.circular(20),
+                    child: InkWell(
+                      onTap: () =>
+                          Get.toNamed(Routes.PRESENCE_DETAILS, arguments: data),
+                      borderRadius: BorderRadius.circular(20),
+                      child: Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
-                          child: InkWell(
-                            onTap: () => Get.toNamed(Routes.PRESENCE_DETAILS,
-                                arguments: data),
-                            borderRadius: BorderRadius.circular(20),
-                            child: Container(
-                              padding: const EdgeInsets.all(20),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        const Text(
-                                          'Masuk',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        Text(
-                                          DateFormat.yMMMEd().format(
-                                            DateTime.parse(
-                                              data['date'],
-                                            ),
-                                          ),
-                                          style: const TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ],
-                                    ),
-                                    Text(
-                                      DateFormat.jms().format(
-                                        DateTime.parse(data['masuk']?['date']),
+                        ),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text(
+                                    'Masuk',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(
+                                    DateFormat.yMMMEd().format(
+                                      DateTime.parse(
+                                        data['date'],
                                       ),
                                     ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
-                                    const Text('Keluar',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold)),
-                                    Text(data['keluar']?['date'] != null
-                                        ? DateFormat.jms().format(
-                                            DateTime.parse(
-                                              data['keluar']['date'],
-                                            ),
-                                          )
-                                        : '-'),
-                                  ]),
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  );
-                }),
-          ),
-        ],
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                              Text(
+                                DateFormat.jms().format(
+                                  DateTime.parse(data['masuk']?['date']),
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              const Text('Keluar',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              Text(data['keluar']?['date'] != null
+                                  ? DateFormat.jms().format(
+                                      DateTime.parse(
+                                        data['keluar']['date'],
+                                      ),
+                                    )
+                                  : '-'),
+                            ]),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            );
+          },
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          DateTimeRange? date = await showDateRangePicker(
+            context: context,
+            firstDate: DateTime(2000),
+            lastDate: DateTime(2100),
+          );
+          if (date != null) {
+            controller.pickDate(date.start, date.end);
+          }
+        },
       ),
     );
   }
