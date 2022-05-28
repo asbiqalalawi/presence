@@ -28,7 +28,7 @@ class PageIndexController extends GetxController {
           await updatePosition(position, address);
 
           double distance = Geolocator.distanceBetween(
-              37.4219983, -122.0861887, position.latitude, position.longitude);
+              -6.7190683, 108.3590556, position.latitude, position.longitude);
 
           await presence(position, address, distance);
         } else {
@@ -242,7 +242,8 @@ class PageIndexController extends GetxController {
 
     // When we reach here, permissions are granted and we can
     // continue accessing the position of the device.
-    Position position = await Geolocator.getCurrentPosition();
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
     return {
       'status': true,
       'position': position,
